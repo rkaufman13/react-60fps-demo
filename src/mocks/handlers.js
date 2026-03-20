@@ -1,106 +1,162 @@
-import { ws, http, HttpResponse } from "msw";
+import { ws } from "msw";
 import { WS_URL } from "../Consts";
 
 const mockWs = ws.link(WS_URL);
 
+const defaultFace = {
+  left: 152,
+  right: 289,
+  top: 178,
+  bottom: 316,
+  geometry: {
+    chin: [
+      [119, 248],
+      [124, 289],
+      [133, 328],
+      [140, 365],
+      [154, 402],
+      [174, 436],
+      [202, 464],
+      [234, 487],
+      [273, 496],
+      [315, 494],
+      [351, 476],
+      [386, 450],
+      [409, 416],
+      [425, 374],
+      [432, 331],
+      [434, 285],
+      [434, 241],
+    ],
+    left_eyebrow: [
+      [144, 211],
+      [158, 188],
+      [186, 181],
+      [213, 184],
+      [241, 190],
+    ],
+    right_eyebrow: [
+      [289, 190],
+      [317, 179],
+      [349, 177],
+      [377, 186],
+      [395, 209],
+    ],
+    nose_bridge: [
+      [266, 223],
+      [266, 252],
+      [264, 280],
+      [264, 312],
+    ],
+    nose_tip: [
+      [239, 333],
+      [252, 340],
+      [269, 345],
+      [287, 340],
+      [303, 333],
+    ],
+    left_eye: [
+      [177, 232],
+      [193, 223],
+      [211, 220],
+      [229, 232],
+      [211, 236],
+      [193, 239],
+    ],
+    right_eye: [
+      [312, 232],
+      [331, 223],
+      [349, 223],
+      [368, 232],
+      [351, 239],
+      [331, 236],
+    ],
+    top_lip: [
+      [220, 395],
+      [239, 386],
+      [257, 381],
+      [273, 384],
+      [289, 379],
+      [310, 386],
+      [335, 395],
+      [326, 395],
+      [289, 393],
+      [273, 395],
+      [257, 395],
+      [229, 397],
+    ],
+    bottom_lip: [
+      [335, 395],
+      [315, 411],
+      [292, 416],
+      [276, 416],
+      [257, 416],
+      [239, 409],
+      [220, 395],
+      [229, 397],
+      [257, 395],
+      [273, 395],
+      [292, 395],
+      [326, 395],
+    ],
+  },
+};
+
 const fakeCamera = {
   status: "running",
-  cameras: {
-    camera0: {
+  cameras: [
+    {
       faces: {
-        abc: {
-          chin: [
-            (52, 108),
-            (54, 126),
-            (58, 143),
-            (61, 159),
-            (67, 175),
-            (76, 190),
-            (88, 202),
-            (102, 212),
-            (119, 216),
-            (137, 215),
-            (153, 207),
-            (168, 196),
-            (178, 181),
-            (185, 163),
-            (188, 144),
-            (189, 124),
-            (189, 105),
-          ],
-          left_eyebrow: [(63, 92), (69, 82), (81, 79), (93, 80), (105, 83)],
-          right_eyebrow: [
-            (126, 83),
-            (138, 78),
-            (152, 77),
-            (164, 81),
-            (172, 91),
-          ],
-          nose_bridge: [(116, 97), (116, 110), (115, 122), (115, 136)],
-          nose_tip: [
-            (104, 145),
-            (110, 148),
-            (117, 150),
-            (125, 148),
-            (132, 145),
-          ],
-          left_eye: [
-            (77, 101),
-            (84, 97),
-            (92, 96),
-            (100, 101),
-            (92, 103),
-            (84, 104),
-          ],
-          right_eye: [
-            (136, 101),
-            (144, 97),
-            (152, 97),
-            (160, 101),
-            (153, 104),
-            (144, 103),
-          ],
-          top_lip: [
-            (96, 172),
-            (104, 168),
-            (112, 166),
-            (119, 167),
-            (126, 165),
-            (135, 168),
-            (146, 172),
-            (142, 172),
-            (126, 171),
-            (119, 172),
-            (112, 172),
-            (100, 173),
-          ],
-          bottom_lip: [
-            (146, 172),
-            (137, 179),
-            (127, 181),
-            (120, 181),
-            (112, 181),
-            (104, 178),
-            (96, 172),
-            (100, 173),
-            (112, 172),
-            (119, 172),
-            (127, 172),
-            (142, 172),
-          ],
-        },
+        abc: defaultFace,
       },
       width: 1080,
       height: 1920,
     },
-  },
+  ],
 };
+
+let count = 0;
 
 export const handlers = [
   mockWs.addEventListener("connection", ({ client }) => {
-    console.log("successfully intercepted websocket");
-    client.addEventListener("message", (event) => {
-      return HttpResponse.json({ fakeCamera });
+    console.log("MSW is on and listening");
+    client.addEventListener("message", () => {
+      count += 1;
+      let updatedFace = fakeCamera.cameras[0].faces["abc"];
+      updatedFace = translate(updatedFace);
+      updatedFace = transform(updatedFace);
+      fakeCamera.cameras[0].faces["abc"] = updatedFace;
+      client.send(JSON.stringify(fakeCamera));
+      if (count == 25) {
+        count = 0;
+        getFreshFace();
+      }
     });
   }),
 ];
+function translate(updatedFace) {
+  const dimension = Math.random() > 0.5 ? ["top", "bottom"] : ["left", "right"];
+  const direction = Math.random() > 0.5 ? 1 : -1;
+  updatedFace[dimension[0]] =
+    fakeCamera.cameras[0].faces["abc"][dimension[0]] + 2 * direction;
+  updatedFace[dimension[1]] =
+    fakeCamera.cameras[0].faces["abc"][dimension[1]] + 2 * direction;
+
+  return updatedFace;
+}
+
+function transform(updatedFace) {
+  for (const part of Object.keys(updatedFace.geometry)) {
+    const index = Math.floor(Math.random() * updatedFace.geometry[part].length);
+    const point = updatedFace.geometry[part][index];
+
+    const direction = Math.random() > 0.5 ? 1 : -1;
+    point[0] = point[0] + 2 * direction;
+    point[1] = point[1] + 2 * direction;
+  }
+  return updatedFace;
+}
+
+function getFreshFace() {
+  fakeCamera.cameras[0].faces["abc"] = window.structuredClone(defaultFace);
+}
