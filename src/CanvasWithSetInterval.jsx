@@ -44,61 +44,58 @@ const Canvas = ({ numFaces }) => {
     sendMessage("{ 'any': 'json' }");
   }, [readyState, sendMessage]);
 
-  useEffect(() => {
-    const draw = () => {
-      if (facesRef.current) {
-        context.clearRect(0, 0, canvasWidth, canvasHeight);
-        const faces = facesRef.current;
-        for (const face_id of Object.keys(faces)) {
-          let lineWidth = 1;
-          const facePoints = faces[face_id].geometry;
-          const left = faces[face_id].left;
-          const top = faces[face_id].top;
-          if (facePoints == undefined || context == null) {
-            return;
+  const draw = () => {
+    if (facesRef.current) {
+      context.clearRect(0, 0, canvasWidth, canvasHeight);
+      const faces = facesRef.current;
+      for (const face_id of Object.keys(faces)) {
+        let lineWidth = 1;
+        const facePoints = faces[face_id].geometry;
+        const left = faces[face_id].left;
+        const top = faces[face_id].top;
+        if (facePoints == undefined || context == null) {
+          return;
+        }
+        const bodyParts = Object.keys(facePoints);
+
+        for (const part of bodyParts) {
+          const partToDraw = facePoints[part];
+          const xOffset = left;
+          const yOffset = top;
+
+          context.beginPath();
+          context.moveTo(
+            partToDraw[0][0] + xOffset,
+            partToDraw[0][1] + yOffset,
+          );
+          for (const point of partToDraw.slice(1)) {
+            context.lineTo(point[0] + xOffset, point[1] + yOffset);
           }
-          const bodyParts = Object.keys(facePoints);
-
-          for (const part of bodyParts) {
-            const partToDraw = facePoints[part];
-            const xOffset = left;
-            const yOffset = top;
-
-            context.beginPath();
-            context.moveTo(
+          if (part == "left_eye" || part == "right_eye") {
+            context.lineTo(
               partToDraw[0][0] + xOffset,
               partToDraw[0][1] + yOffset,
             );
-            for (const point of partToDraw.slice(1)) {
-              context.lineTo(point[0] + xOffset, point[1] + yOffset);
-            }
-            if (part == "left_eye" || part == "right_eye") {
-              context.lineTo(
-                partToDraw[0][0] + xOffset,
-                partToDraw[0][1] + yOffset,
-              );
-            }
-            context.strokeStyle = color_stroke_1;
-            context.lineWidth = line_width_1 * lineWidth;
-            context.stroke();
           }
+          context.strokeStyle = color_stroke_1;
+          context.lineWidth = line_width_1 * lineWidth;
+          context.stroke();
         }
       }
-    };
-    let animationFrameId;
+    }
+  };
 
-    if (context) {
-      const render = () => {
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      if (context) {
         draw();
         sendMessage("{'any':'json'}");
-        animationFrameId = requestAnimationFrame(render);
-      };
-      render();
-    }
+      }
+    }, 1000 / 60);
     return () => {
-      cancelAnimationFrame(animationFrameId);
+      clearInterval(intervalId);
     };
-  }, [facesRef, context, sendMessage]);
+  });
 
   useEffect(() => {
     if (canvasRef.current) {

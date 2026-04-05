@@ -66,3 +66,45 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.canvas-drawing {
+background-color: #f6f6f6;
+  max-width: 56.249999993vh;
+  width: 56.249999993vh;
+}
+
+
+#main {
+  width:100%;
+  display:grid;
+  grid-template-columns: 20% auto 50%;
+  
+}
+
+#sidebar{
+ display:flex;
+ flex-direction:column;
+ align-items: center;
+ align-content: center;
+ justify-content: center;
+}
+
+#app {
+  margin: 0 2rem;
+}
+
+#sidebar button {
+  background-color:aquamarine;
+  margin: 20px 0px;
+}
+
+#explanation {
+  max-height: 100vh;
+  overflow-y: scroll;
+}
+
+.toggle-slider{
+  margin-left: 10px;
+  margin-right: 10px;
+  width:40px;
+}

@@ -1,13 +1,15 @@
 import { useState, useReducer,useEffect } from 'react'
-import useWebSocket from 'react-use-websocket-lite'
+import useWebSocket, {ReadyState} from 'react-use-websocket-lite'
 import { useDebouncedCallback } from 'use-debounce';
 import { WS_URL } from './Consts';
 
 
-import Canvas from './Canvas';
+import LeakyCanvas from './LeakyCanvas';
 
 
-function App() {
+
+
+function Leaky() {
   const [cameras, setCameras] = useState();
 
 
@@ -15,7 +17,7 @@ function App() {
     try {     
       const message = JSON.parse(event.data);
         if (Object.hasOwn(message, 'cameras')) {
-          setCameras(message.cameras.map(camera=>{delete camera.faces; return camera}))
+          setCameras(message.cameras);
         }
         if (Object.hasOwn(message, 'matches')) {
           if (!Object.values(message.matches).some(match => match == "null")) {
@@ -23,6 +25,7 @@ function App() {
             state.matches = Object.values(message.matches);
           }
         }
+        
         
       
     } catch (e) {
@@ -45,7 +48,7 @@ function App() {
       sendMessage("{ 'any': 'json' }", false);
     },
     // delay in ms
-    (1000 ), { leading: true, maxWait: (1000 ) }
+    (1000/60 ), { leading: true, maxWait: (1000/60 ) }
   );
 
 
@@ -109,7 +112,7 @@ function App() {
     <>
 
       {cameras &&
-        <Canvas state={state} dispatch={dispatch} />}
+        <LeakyCanvas state={state} dispatch={dispatch} cameras={cameras} />}
 
     </>
   )
@@ -117,4 +120,4 @@ function App() {
 
 }
 
-export default App
+export default Leaky
