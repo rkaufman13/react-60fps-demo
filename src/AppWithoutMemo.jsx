@@ -1,15 +1,15 @@
 import { useState } from "react";
 
-import Canvas from "./Canvas";
+import CanvasWithoutMemo from "./CanvasWithoutMemo";
 
-function App({ numFaces }) {
+function AppWithoutMemo({ numFaces }) {
   const [irrelevantValue, setIrrelevantValue] = useState();
   const handleClick = () => {
     setIrrelevantValue(Math.floor(Math.random() * 10));
   };
   return (
     <>
-      <Canvas numFaces={numFaces} />
+      <CanvasWithoutMemo numFaces={numFaces} />
       Irrelevant value: {irrelevantValue}
       <button onClick={handleClick}>
         Change an irrelevant-to-the-animation value
@@ -18,4 +18,4 @@ function App({ numFaces }) {
   );
 }
 
-export default App;
+export default AppWithoutMemo;

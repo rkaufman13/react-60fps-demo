@@ -3,7 +3,7 @@ import { color_stroke_1, line_width_1, WS_URL } from "./Consts";
 import useWebSocket from "react-use-websocket-lite";
 
 const Canvas = ({ numFaces }) => {
-  console.log("I have rendered :)");
+  console.log("I have rendered :(");
   const canvasRef = useRef(null);
   const [context, setContext] = useState(null);
   const canvasHeight = 1920;
@@ -122,4 +122,4 @@ const Canvas = ({ numFaces }) => {
   );
 };
 
-export default React.memo(Canvas);
+export default Canvas;

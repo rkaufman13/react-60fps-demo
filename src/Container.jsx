@@ -1,10 +1,10 @@
 import { useState } from "react";
-
-import Canvas from "./Canvas";
+import App from "./App";
 import AppExplanation from "./AppExplanation";
 import Sidebar from "./Sidebar";
 import Leaky from "./Leaky";
 import CanvasWithSetInterval from "./CanvasWithSetInterval";
+import AppWithoutMemo from "./AppWithoutMemo";
 
 const Container = () => {
   const [visible, setVisible] = useState({ working: true, leaky: false });
@@ -39,12 +39,15 @@ const Container = () => {
         <div id="app">
           {visible.working && (
             <>
-              <Canvas numFaces={numFaces}></Canvas>
+              <App numFaces={numFaces}></App>
             </>
           )}
           {visible.leaky && <Leaky></Leaky>}
           {visible.interval && (
             <CanvasWithSetInterval numFaces={numFaces}></CanvasWithSetInterval>
+          )}
+          {visible.unmemoized && (
+            <AppWithoutMemo numFaces={numFaces}></AppWithoutMemo>
           )}
         </div>
         <div id="explanation">
