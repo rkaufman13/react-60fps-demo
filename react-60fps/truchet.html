@@ -1,0 +1,284 @@
+
+<!-- What's the length of one side of the tile, in the red dashed area?
+     6 = (1 + 2) * 2 -->
+
+<!-- How far is the tile offset from the edge of the symbol/path?
+     2 = max(1, 2) -->
+
+     <svg style="display:none">
+<symbol id="base">
+  <!--
+    For the background, draw a square that fills the whole tile, then
+    four circles on each of the corners.
+    -->
+  <g class="background">
+    <rect x="4" y="4" width="12" height="12"/>
+    <circle cx=" 4 "            cy=" 4 "            r=" 4 "/>
+    <circle cx=" 16 " cy=" 4 "            r=" 4 "/>
+    <circle cx=" 4 "            cy=" 16 " r=" 4 "/>
+    <circle cx=" 16 " cy=" 16 " r=" 4 "/>
+  </g>
+  <!--
+    For the foreground, draw four circles on the middle of each tile edge.
+    -->
+  <g class="foreground">
+    <circle cx="4" cy="10" r=" 2 "/>
+    <circle cx=" 16 " cy="10"       r=" 2 "/>
+    <circle cx=" 10 "       cy=" 4 "            r=" 2 "/>
+    <circle cx=" 10 "       cy=" 16 " r=" 2 "/>
+  </g>
+</symbol>
+</svg>
+
+<!--
+  Slash:
+    - Move to the top edge, left-hand vertex of the slash
+    - Line to the top edge, right-hand vertex
+    - Smaller arc to left egde, upper vertex
+    - Line down to left edge, lower vertex
+    - Larger arc back to the start
+-->
+    <svg style="display: none;">
+<path
+  id="slash"
+  d="M  8   4 
+     l  4  0
+     a  4   4  0 0 0  4   4 
+     l 0  4 
+     a  8   8  0 0 1  -8   -8 "/>
+
+<!--
+  wedge:
+    - Move to the top edge, left-hand vertex of the slash
+    - Line to the top edge, right-hand vertex
+    - Smaller arc to left egde, upper vertex
+    - Line to centre of the tile
+    - Line back to the start
+-->
+
+<path
+  id="wedge"
+  d="M  8   4 
+     l  4  0
+     a  4   4  0 0 0  4   4 
+     l  0   4 
+     l  -8  0"/>
+
+<!--
+  Bar: horizontal rectangle that spans the tile width and is the same height
+  as a circle on the centre of an edge.
+  -->
+
+<rect
+  id="bar"
+  x="4" y="8"
+  width="12"
+  height=" 4"/>
+</svg>
+<svg style="display:none">
+  <symbol id="carlsonT">
+  <use href="#base"/>
+  <use href="#wedge" class="foreground"/>
+  <use href="#wedge" class="foreground" transform="rotate(90  10   10 )"/>
+</symbol>
+  <symbol id="carlsonT-90">
+  <use href="#carlsonT" transform="rotate(90 10 10)"/>
+</symbol>
+  <symbol id="carlsonT-180">
+  <use href="#carlsonT" transform="rotate(180 10 10)"/>
+</symbol>
+  <symbol id="carlsonT-270">
+  <use href="#carlsonT" transform="rotate(270 10 10)"/>
+</symbol>
+
+
+  <symbol id="carlsonCross">
+  <use href="#base"/>
+  <use href="#bar" class="foreground"/>
+  <use href="#bar" class="foreground" transform="rotate(180  10 10)"/>
+</symbol>
+  <symbol id="carlsonArcs">
+  <use href="#base"/>
+  <use href="#slash" class="foreground"/>
+  <use href="#slash" class="foreground" transform="rotate(180  10 10 )"/>
+</symbol>
+  <symbol id="carlsonArcs-90">
+  <use href="#carlsonArcs" transform="rotate(90 10 10)"/>
+</symbol>
+<symbol id="carlsonDivide">
+  <use href="#base"></use>
+  <use href="#bar" class="foreground"/>
+</symbol>
+<symbol id="carlsonDivide-90"><use href="#carlsonDivide" transform="rotate(90 10 10)"></use></symbol>
+<symbol id="carlsonPlus">
+  <use href="#base"/>
+   <use href="#wedge" class="foreground"/>
+   <use href="#wedge" class="foreground" transform="rotate(90 10 10)"></use> 
+    <use href="#wedge" class="foreground" transform="rotate(180 10 10)"></use> 
+  <use href="#wedge" class="foreground" tronsform="rotate(270 10 10)"></use>
+</symbol>
+<symbol id="carlsonFrown">
+  <use href="#base"></use>
+  <use href="#slash" class="foreground"></use>
+</symbol>
+<symbol id="carlsonFrown-90">
+  <use href="#carlsonFrown" transform="rotate(90 10 10)"></use>
+</symbol>
+<symbol id="carlsonFrown-180">
+  <use href="#carlsonFrown" transform="rotate(180 10 10)"></use>
+</symbol>
+<symbol id="carlsonFrown-270">
+  <use href="#carlsonFrown" transform="rotate(270 10 10)"></use>
+</symbol>
+
+</svg>
+
+<style>
+  #headline {
+    font: bold;
+    font-family: sans-serif;
+    font-size: 45pt;
+    padding-right:2rem;
+  }
+  h2 {
+    font-family: sans-serif;
+    padding-right: 2rem;
+    font-size:35pt;
+  }
+</style>
+
+
+<svg id="truchet" width="1450" height="650">
+  
+</svg> 
+<div style="z-index: 10; width:1450px; position:absolute;bottom: 50; padding:4rem 0 2rem 0;text-anchor:end;letter-spacing: 0.05rem;text-align:right" id="text" class="textGradient"></div>
+
+<script>
+
+
+  const pallettes = [{"fg":"#F5EE9E","bg":"rgb(255, 179, 107)","text":"#115", "gradient1":"rgba(255,165,0,0.20)", "gradient2":"rgba(178,34,34,0.65)"},
+  {"fg":"#2568BA","bg":"rgb(179, 123, 203)","text":"white", "gradient1":"rgba(102, 51, 153,0.2)", "gradient2":"rgba(0, 0, 128,0.65)"},
+  {"fg":"#EDE7E3","bg":"#82C0CC","text":"rgb(35, 2, 94)", "gradient1":"rgba(135, 206, 235, 0.2)", "gradient2":"rgba(0, 139, 139,0.65)"},
+  {"fg":"#D7FDF0","bg":"#EBFFF4","text":"#595C73", "gradient1":"rgba(235, 255, 244, 0.2)", "gradient2":"rgba(8, 155, 104,0.65)"}
+]
+function selectPalette(){
+  return pallettes[3];
+}
+
+
+function addStylesheetRules(palette) {
+const sheet = new CSSStyleSheet();
+sheet.replaceSync(`#truchet{color: ${palette.fg}; background-color:${palette.bg}} .background { fill: ${palette.bg}; } .foreground { fill:${palette.fg}} .regular {fill: ${palette.text};} .stop1 {stop-color: ${palette.gradient1}} .stop2 {stop-color: ${palette.gradient2}} .textGradient{background: linear-gradient(to bottom, ${palette.gradient1},${palette.gradient2});#headline{color:${palette.text}}; h2 {color: ${palette.text}}`);
+// Apply the stylesheet to a document:
+document.adoptedStyleSheets.push(sheet);
+
+}
+
+// function splitTextToLines(text){
+
+// const result = text.split(" ")
+
+// if (result.length<6){
+//   return [text]}
+//   else if (12>result.length){
+//     const first = result.slice(0,Math.ceil(result.length/2));
+//     const second = result.slice(Math.ceil(result.length/2));
+    
+//     return [first.join(" "),second.join(" ")]
+//   } else {
+//     const first = result.slice(0,Math.ceil(result.length/3));
+//     const second = result.slice(Math.ceil(result.length/3),Math.ceil(result.length/3)*2);
+//     const third = result.slice(Math.ceil(result.length/3)*2);
+    
+//     return [first.join(" "),second.join(" "),third.join(" ")]
+//   }
+// }
+
+// function createText(text){
+//   const svg = document.getElementById("truchet");
+//   const baseFontSize = 70;
+//   let fontSize = baseFontSize;
+
+// const baseY = 500;
+// let y = baseY;
+
+//   if (text.length >30){
+//     fontSize= Math.floor(fontSize*.85);
+//   }
+// const lines = splitTextToLines(text);
+// y-=lines.length*40;
+
+// const lineLengths = lines.map(line=>line.split("").length);
+// const maxLength = Math.max(...lineLengths)
+
+// const x = Math.min(1140 - (maxLength*fontSize*.65),300)
+ 
+// for (let i=0;i<lines.length;i++){
+  
+//   svg.innerHTML+=`
+//   <text class="regular" id="headline" style="font: bold ${fontSize}px sans-serif; text-anchor:end" x=1140 y=${y+i*55} >${lines[i]}</text>
+//   `;
+// }
+// svg.innerHTML+=`
+// <text class="regular"  style="font: bold ${Math.floor(fontSize*.6)}px serif;text-anchor:end; letter-spacing:0.05rem" x=1140 y=${y+lines.length*40+65}>A blog post by Rachel Kaufman</text>`;
+
+
+
+// }
+
+
+
+
+
+function getTilePositions({
+  columns,
+  rows,
+  tileSize,
+}) {
+  let tiles = [];
+  
+  // Draw layer 1 of tiles, which is a full-sized tile for
+  // every row and column.
+  for (i = 0; i < columns; i++) {
+    for (j = 0; j < rows; j++) {
+      tiles.push({ x: i * tileSize, y: j * tileSize, layer: 1 });
+    }
+  }
+ 
+  return tiles;
+}
+
+function drawTruchetTiles(svg, tileTypes, tilePositions, padding) {
+    
+  tilePositions.forEach(c => {
+    let tileName =  tileTypes[Math.floor(Math.random() * tileTypes.length)];
+  
+    svg.innerHTML += `
+      <use
+        href="#${tileName}"
+        x="${c.x }"
+        y="${c.y }"
+        transform="translate(${padding} ${padding}) scale(5)"/>`;
+  });
+}
+
+const tiles = ["carlsonT","carlsonT-90","carlsonT-180","carlsonT-270","carlsonCross","carlsonArcs","carlsonArcs-90","carlsonDivide","carlsonDivide-90","carlsonPlus","carlsonFrown","carlsonFrown-90","carlsonFrown-180","carlsonFrown-270"]
+
+const svg = document.getElementById("truchet");
+if (!svg){
+    console.log("not found")
+} else {
+  const text = new URLSearchParams(window.location.search);
+  if (!text.has("headline")){
+    console.log("invalid input")
+  } else {
+  const palette = selectPalette();
+drawTruchetTiles(svg,tiles,getTilePositions({columns:45,rows:12,tileSize:12}),8)
+
+addStylesheetRules(palette);
+const textDiv = document.getElementById("text");
+textDiv.innerHTML=`<h1 id="headline">${text.get("headline")}</h1><h2>${text.get("subheadline")??""}</h2>`;
+  }
+}
+</script>
+

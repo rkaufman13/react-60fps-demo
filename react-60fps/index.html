@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>React at 60 FPS</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/rachel.css">
+				<link rel="stylesheet" href="dist/theme/cssanim-letter.css">
+					
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/agate.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section data-background-image="assets/gottagofast.png" data-background-size="cover" data-state="big-title">
+					&nbsp;
+					<aside class="notes">Gotta go fast:React at 60FPS - no libraries needed</aside>
+				</section>
+				<section data-background-image="assets/header-blue.png">
+					<p>What this isn't:</p>
+
+					<ul><li>CSS animations</li></ul>
+					<div class="fragment">
+					<button anim="pulse" class="button-pulse">CLICK ME</button>
+					</div>
+					<aside class="notes">Now you may be thinking that we can already get awesome, fast, performant animations in React, just using CSS. And you can do a lot with CSS. This is like the most minimal example.</aside>
+				</section>
+				<section data-background-image="assets/header-blue.png">
+<h2>About me</h2> 
+<ul style="font-size:2rem"><li>Software engineer at martech company</li>
+<li class="fragment" >Occasional freelancer for projects where I have bad ideas</li></ul>
+<div id="left">
+	<img class="fragment"  data-src="assets/spy.png" height="400px"/>
+	</div>
+	<div id="right">
+		<img class="fragment"  data-src="assets/sailormoon.png" height="400px">
+	</div>
+				</section>
+				<section data-background-image="assets/header-blue.png">
+						<img data-src="assets/menchris.jpg" />
+
+				</section>
+				<section data-background-image="assets/header-blue.png">
+<video  controls ><source src="assets/video-long.mp4"></video>
+
+				</section>
+
+				<section data-background-image="assets/header-blue.png">
+					<div class="r-stack">
+					<img data-src="assets/architecture.png"/>
+					<img data-src="assets/henryvii.png" class="fragment fade-in-then-out"/>
+										<img data-src="assets/architecture.png" class="fragment"/>
+</div>
+				</section>
+				<section data-background-image="assets/header-blue.png">
+					<h1>So why React?</h1>
+					<div id="left">Cons:
+						<ul><li>Virtual DOM means React can't get this performance out of the box</li>
+						<li>No library exists that is flexible enough for this use case</li></ul>
+					</div>
+					<div id="right" class="fragment">Pros:
+						<ul><li>React makes managing complex state easy</li>
+						<li>Free GPU acceleration in modern browsers</li>
+					<li>If all you have is a hammer everything is a nail I guess?</li></ul>
+					</div>
+				</section>
+								<section data-background-image="assets/header-blue.png">
+					<h4>How to get the most performance out of React, with no animation libraries</h4>
+					<ul>
+						<li class="fragment">Websockets for moving data fast</li>
+						<li class="fragment">RequestAnimationFrame for better animations</li>
+						<li class="fragment">Drawing with HTML Canvas</li>
+						<li class="fragment">Debugging tips</li>
+					</ul>
+				</section>
+									<section data-background-image="assets/header-blue.png">
+					<p class="r-fit-text">But first....</p>
+				</section>
+								<section data-background-image="assets/header-blue.png">
+					<h1 class="r-fit-text">Live demo time</h1>
+				</section>
+								<section data-background-image="assets/websockets.png" data-background-size="cover" data-state="big-title"> 
+					<aside class="notes"><h2>1. Websockets</h2>
+					<p>For when you need to move data from the BE to the FE with no latency</p>
+					</aside>
+				</section>
+				<section data-background-image="assets/header-yellow.png">
+					<img data-src="assets/matrix.gif">
+					<p class="caption">credit: Marshall Ruse</p>
+<aside class="notes">If your data is derived entirely from the frontend, such as using the x-y position of the user's mouse cursor to make an animation, you don't need websockets. For the rest of us..</aside>
+				</section>
+				<section data-background-image="assets/header-yellow.png">
+					<h3>Websockets!</h3>
+					<ul><li>Open connection once, persist for life of the app</li>
+					<li>Reduces bytes transferred by ~80%</li>
+				<li>Don't think too hard about it, just use a library</li></ul>
+				</section>
+					<section data-background-image="assets/header-yellow.png">
+					<h4>Why it works</h4>
+					<img data-src="assets/websocket.jpg" width="700">
+					
+				</section>
+				<section data-background-image="assets/header-yellow.png">
+					<h4>Quick note on websocket libraries</h4>
+					<div id="left"><pre>react-use-websocket</pre>
+						<ul><li>1,300 stars on github</li><li>doesn't *&#$% work</li></ul>
+					</div>
+					<div id="right"><pre>react-use-websocket-lite</pre>
+						<ul><li>17 stars on github</li>
+						<li>works perfectly</li>
+					<li>also 100kb lighter</li></ul>
+					</div>
+				</section>
+				
+				<section data-background-image="assets/whatisRAF.png" data-background-size="cover" data-state="big-title">
+					<aside class="notes"><h2>2. What's <pre>requestAnimationFrame?</pre></h2></aside>
+				</section>
+				<section data-background-image="assets/header-purple.png"><h4>The rude way to animate</h4>
+<div id="left"><pre>setInterval(()=>draw(),1000/60)</pre>
+<ul>
+	<li>Doesn't take priority over other browser tasks (so can stutter or skip)</li>
+	<li>Is not guaranteed to run in the interval specified, it's just a best estimate</li>
+	<li>MIGHT keep chugging away even if the user abandons the tab</li></ul>
+</div>
+	<div id="right"><img data-src="https://placehold.co/400?text=tk"></div>
+
+				</section>
+<section data-background-image="assets/header-purple.png"><h4>The polite way to animate</h4>
+	<div id="left"><img data-src="https://placehold.co/400?text=tk"></div>
+	<div id="right"><pre>requestAnimationFrame(draw)</pre>
+<ul><li>Synced to display refresh rate (magic??)</li>
+	
+<li>Will DEFINITELY automatically pause if user leaves</li></ul></div>
+
+</section>
+				
+				<section data-background-image="assets/header-purple.png">
+					<h2>Basic syntax for requestAnimationFrame</h2>
+					<div>
+						<pre><code class="language-javascript" style="font-size: smaller" data-line-numbers="">function step() {
+	//animation logic goes here
+    requestAnimationFrame(step);
+  	}
+requestAnimationFrame(step);</code>
+						</pre>
+					</div>
+				</section>
+				<section data-background-image="assets/header-purple.png">
+					<h4>requestAnimationFrame with React, for an animation that runs indefinitely</h4>
+					<div>
+						<pre><code class="language-javascript" style="font-size: smaller" data-line-numbers="" data-noescape data-trim>	
+useEffect(() => {
+	let animationFrameId;
+	const step = () => {
+    //animation logic here
+		animationFrameId = requestAnimationFrame(step);
+	};
+    step();
+	return () => {
+     	cancelAnimationFrame(animationFrameId);
+   	};
+});</code>
+						</pre>
+					</div>
+				</section>
+				<section data-background-image="assets/whatsInTheLoop.png" data-background-size="cover" data-state="big-title"></section>
+					<aside class="notes">What's in the animate loop?</aside>
+				</section>
+								<section data-background-image="assets/header-mintgreen.png">
+					<h4>HTML Canvas</h4>
+					<ul><li class="fragment">The backbone of drawing on the Web</li>
+					<li class="fragment">Draw lines, shapes, text, images</li>
+				<li class="fragment">Used in popular libraries like Phaser.js, p5.js</li></ul>
+				<img data-src="assets/alwayshasbeen.png" class="fragment" width="500">
+				<aside class="notes">HTML Canvas is amazing for drawing, creating interactive elements, and more. It's the underlying technology in things like Phaser.js and Pixi.js which are JS game engines, p5.js which is for creative coding. Even Figma uses a canvas element under the hood but they render to it using absolutely madness technology that I have to admit I don't fully understand. But you'll start seeing it everywhere.</aside>
+				</section>
+				<section data-background-image="assets/header-mintgreen.png">
+					<img data-src="assets/superpowers.png">
+				</section>
+				<section data-background-image="assets/header-mintgreen.png">
+					<pre><code class="language-javascript" style="font-size: smaller" data-line-numbers="">const Canvas = ({props})=>{
+	const canvasRef = useRef(null);
+	const [context, setContext] = useState(null);
+
+	useEffect(() => {
+    	if (canvasRef.current) {
+      	setContext(canvasRef.current.getContext("2d"));
+      	}
+  	}, []);
+	return &lt;canvas ref={canvasRef}&gt;;
+}</code></pre>
+				</section>
+				<section data-background-image="assets/header-mintgreen.png">
+					<pre><code data-trim class="language-javascript" data-line-numbers="0|1|2|3|4-8|9">context.clearRect(0, 0, canvasWidth, canvasHeight);
+context.beginPath();
+context.moveTo(startX,startY);
+for (const pointPair of listOfPoints) {
+    context.moveTo(
+        pointPair.x
+        pointPair.y);
+}
+context.stroke();
+
+					</code></pre>
+				</section>
+				<section data-background-image="assets/header-mintgreen.png">
+	<pre><code class="language-javascript" style="font-size: smaller" data-line-numbers="">const canv = document.querySelector("canvas");
+const ctx = canv.getContext("2d");
+ctx.strokeStyle="blue"; 
+const myPoints = [{x:10,y:220},{x:125,y:10},{x:250,y:220}]
+	  ctx.beginPath();
+	  ctx.moveTo(250,220);
+for (const point of myPoints){
+	ctx.lineTo(point.x,point.y);
+}
+ctx.stroke();</code></pre>			
+<local-iframe style="display:inline-block;border:1px solid #ccc;height:300px;width:320px;">
+  <template>
+	<center>
+	<button id="reveal-button">Click to draw</button></center>
+    <canvas id="reveal-democanvas" height="300" width="300" >	
+    <script>
+	  const button = document.getElementById("reveal-button");
+	  button.addEventListener('click',()=>{const canv = document.querySelector("canvas");
+      const ctx = canv.getContext("2d");
+	 	  ctx.strokeStyle="blue"; 
+	  const myPoints = [{x:10,y:220},{x:125,y:10},{x:250,y:220}]
+	  ctx.beginPath();
+	  ctx.moveTo(250,220);
+	  for (const point of myPoints){
+		ctx.lineTo(point.x,point.y);
+	  }
+	  ctx.stroke();})
+    </script>
+  </template>
+</local-iframe >
+
+<aside class="notes">So with this example here, and this is just vanilla JS, you can see that we can get a 2D context object from the canvas, set some properties on it like the color of the stroke, and then place points on the canvas.</aside>
+				</section>
+
+	<section data-background-image="assets/header-mintgreen.png">
+	<pre><code class="language-javascript" style="font-size: smaller" data-line-numbers="">const canv = //same stuff as before
+let animationFrameId;
+const draw = ()=>{
+	ctx.clearRect(0,0,300,300);
+	const myPoints = //do math on points
+	ctx.beginPath();
+		for (const point of myPoints){
+			ctx.lineTo(point.x,point.y);
+		}
+	ctx.stroke();
+	animationFrameId = requestAnimationFrame(draw);
+}
+</code></pre>			
+<local-iframe style="display:inline-block;border:1px solid #ccc;height:300px;width:320px;">
+  <template>
+	<center>
+	<button id="reveal-button-2">Click to draw</button><button id="reveal-stop-anim">Click to stop</button></center>
+    <canvas id="reveal-democanvas-2" height="300" width="300" >	
+    <script>
+	  const secondButton = document.getElementById("reveal-button-2");
+	  const stopButton = document.getElementById("reveal-stop-anim");
+	  let animationFrameId;
+	  stopButton.addEventListener('click',()=>{cancelAnimationFrame(animationFrameId)})
+const canv = document.getElementById("reveal-democanvas-2");
+const ctx = canv.getContext("2d");
+ctx.strokeStyle="blue";
+	  secondButton.addEventListener('click',()=>{requestAnimationFrame(draw)});
+const myPoints = [{x:Math.floor(Math.random()*110),y:Math.floor(Math.random()*220)},{x:Math.floor(Math.random()*220),y:Math.floor(Math.random()*50)},{x:Math.floor(Math.random()*120)+100,y:Math.floor(Math.random()*120)+100}]
+	const draw = ()=>{
+ctx.clearRect(0,0,300,300);
+
+	for (const point of myPoints){
+		point.x+=1*Math.random()>0.5?-1:1
+				point.y+=1*Math.random()>0.5?-1:1
+	}  
+	  ctx.beginPath();
+	for (const point of myPoints){
+	
+	ctx.lineTo(point.x,point.y);
+	}
+	ctx.lineTo(myPoints[0].x,myPoints[0].y)
+ctx.stroke();
+animationFrameId = requestAnimationFrame(draw);
+}
+    </script>
+  </template>
+</local-iframe >
+
+				</section>
+
+<section data-background-image="assets/header-mintgreen.png">
+<pre><code class="language-javascript" data-trim style="font-size: smaller" data-line-numbers="2-16|17-23|24-25">
+
+  useEffect(() => {
+    const draw = () => {
+      if (facesRef.current) {
+        context.clearRect(0, 0, canvasWidth, canvasHeight);
+        const faces = facesRef.current;
+        context.beginPath();
+					for (const face_point of faces) {
+            context.lineTo(
+              face_point.x,
+              face_point.y,
+            );
+            context.stroke();
+          }
+        }
+      }
+    };
+    let animationFrameId;
+      const renderAndRequestNewFrame = () => {
+        draw();
+        sendMessage("{'sendNext':'frame'}");
+        animationFrameId = requestAnimationFrame(renderAndRequestNewFrame);
+      };
+      renderAndRequestNewFrame();
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+  }, [facesRef, context, sendMessage]);
+</code></pre>
+
+</section>
+
+								<section data-background-image="assets/header-yellow.png">
+					<h1 class="r-fit-text">Memoize This Component</h1><!--todo make splash screen-->
+				</section>
+												<section data-background-image="assets/header-yellow.png">
+					<h4 >What is React.Memo?</h4>
+					<ul style="font-size:2rem"><li class="fragment">Replacement for `componentShouldUpdate` in the days of class components</li>
+					<li class="fragment">Without memo: When parent rerenders, children re-render</li>
+				<li class="fragment">With memo: children only re-render when their props change (React does shallow prop comparison tho)</li>
+			<li class="fragment">Don't overuse: React now has to calculate whether to re-render the component</li>
+		<li class="fragment">React 19+ with React Compiler might handle this for you?</li></ul>
+				</section>
+				<section data-background-image="assets/header-yellow.png">Demo</section>
+				<section data-background-image="assets/header-yellow.png">
+<h2>Basic syntax for Memo</h2>
+					<div>
+						<pre><code class="language-javascript" style="font-size: smaller" data-line-numbers="" data-noescape>const MyComponent = ({props})=>{
+						/*some very cool stuff here*/
+						return (<>Very Cool Component {props.name}<>)
+			}
+
+export default React.memo(MyComponent);</code>
+						</pre>
+					</div>
+<aside class="notes">By default, memo performs shallow prop comparison, and this is all we're going into in this talk. But know that you can pass in a custom function to memo to specify exactly which props to compare, or how.</aside>
+				</section>
+				<section data-background-image="assets/header-yellow.png">
+					<h1>Work with, not against, Javascript</h1>
+					<aside class="notes">This is more of a general performance tip than specific to animation, but consider how JS works. And you may need to do some deep research as I certainly didn't know this when I embarked on this project, but there can be huge differences in the performance of different ways to iterate over an object.
+						So in my case there's an array of points, and probably any kind of drawing or animation you're doing is going to have some list of points, and we need to iterate over this array.
+					</aside>
+				</section>
+<section data-background-image="assets/header-yellow.png">
+	<h3>When Loop Performance Matters</h3>
+
+		<pre><code>
+myArray.forEach(item=>doSomethingWith(item));
+//is SIGNIFICANTLY slower than
+for (const item of myArray){
+	doSomethingWith(item)
+}
+		</code></pre>
+	<p><a href="https://leanylabs.com/blog/js-forEach-map-reduce-vs-for-for_of/">Some benchmarks</a> put <code>for..of</code> as more than twice as fast as <code>.forEach</code>.</p>
+	<p>(I tried my own benchmark and <code>forEach</code> crashed my computer 🤷‍♀️)</p>
+	<aside class="notes">And to my surprise, myArray.forEach is SIGNIFICANTLY slower than for item of myArray. Honestly this probably doesn't matter in most applications, because if your dataset is small and you're not doing animations, what's a few ms here or there? But, where every millisecond counts, especially if you have a large</aside>
+</section>
+				<section data-background-image="assets/header-yellow.png">
+					<h1>Useful debugging tools</h1>
+				</section>
+				<section data-background-image="assets/header-yellow.png">
+					
+					Chrome devtools
+					<div class="r-stack">
+						<img data-src="assets/chrome-devtools.png" height="500">
+						<img class="fragment" data-src="assets/devtools2.png" height="500">
+					</div>
+				</section>
+				<section data-background-image="assets/header-yellow.png">Chrome's FPS palette (ctrl-shift-p)</section>
+				<section data-background-image="assets/header-yellow.png">If all else fails: console.time() and console.timeEnd()</section>
+				<section data-background-image="assets/header-yellow.png">
+					<h3>How to use <code>.time()</code> and <code>.timeEnd()</code></h3>
+					<pre><code>console.time("my expensive operation")
+//do something expensive
+console.timeEnd("my expensive operation")</code></pre>
+					produces...
+					<pre>my expensive operation: 15801ms - timer ended</pre>
+				</section>
+				<section data-background-image="assets/header-yellow.png">
+					<h1 class="r-fit-text">We did it!</h1>
+				</section>
+				<section data-background-image="assets/header-yellow.png">
+					<h1>Thank you</h1>
+					<div id="left"><p>Contact me</p>
+<p><img data-src="https://placehold.co/300?text=qr code tk"/></p>
+
+					</div>
+					<div id="right"><p>Download slides/source code</p><p>
+<img data-src="https://placehold.co/300?text=qr code tk"/></p>
+
+					</div>
+				</section>
+				
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+		<style type="text/css">
+    /* 1. Style assets/header/footer <div> so they are positioned as desired. */
+    #assets/header-left {
+        position: absolute;
+        top: 0%;
+        left: 0%;
+    }
+    #assets/header-right {
+        position: absolute;
+        top: 0%;
+        right: 0%;
+    }
+    #footer-left {
+        position: absolute;
+        bottom: 2%;
+        left: 2%;
+		font-size: 16pt;
+    }
+</style>
+
+<!-- 2. Create hidden assets/header/footer <div> -->
+<div id="hidden">
+    <div id="assets/header">
+        <div id="footer-left">by Rachel Kaufman</div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
+<script type="text/javascript">
+    // 3. On Reveal.js ready event, copy assets/header/footer <div> into each `.slide-background` <div>
+    var assetsHeader = $('#assets/header').html();
+    if ( window.location.search.match( /print-pdf/gi ) ) {
+        Reveal.addEventListener( 'ready', function( event ) {
+            $('.slide-background').append(assetsHeader);
+        });
+    }
+    else {
+        $('div.reveal').append(assets/header);
+   }
+</script>
+<script
+  type="module"
+  src="https://cdn.jsdelivr.net/npm/local-iframe@2.1.0/+esm"
+></script>
+	</body>
+</html>
