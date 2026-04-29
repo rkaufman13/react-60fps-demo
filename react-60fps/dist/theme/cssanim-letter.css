@@ -1,0 +1,26 @@
+@keyframes pulse {
+  50% {
+    transform: scale(1.5);
+  }
+}
+
+[anim="pulse"]:not(.toggled) {
+  animation: pulse cubic-bezier(.5,-0.25,.75,1) 1400ms infinite alternate;
+}
+
+.button-pulse {
+  all: unset;
+  color:white;
+  background-color: black;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border: 1px solid red;
+  box-shadow: 0 0 4px #cc0000;
+  cursor: pointer;
+  perspective: 1000px;
+  position: relative;
+  overflow: hidden;
+}
