@@ -11,9 +11,7 @@ function AppWithoutMemo({ numFaces }) {
     <>
       <CanvasWithoutMemo numFaces={numFaces} />
       Irrelevant value: {irrelevantValue}
-      <button onClick={handleClick}>
-        Change an irrelevant-to-the-animation value
-      </button>
+      <button onClick={handleClick}>Force parent to rerender</button>
     </>
   );
 }

@@ -11,9 +11,7 @@ function App({ numFaces }) {
     <>
       <Canvas numFaces={numFaces} />
       Irrelevant value: {irrelevantValue}
-      <button onClick={handleClick}>
-        Change an irrelevant-to-the-animation value
-      </button>
+      <button onClick={handleClick}>Force parent component to rerender</button>
     </>
   );
 }

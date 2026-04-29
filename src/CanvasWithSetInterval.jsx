@@ -59,6 +59,12 @@ const Canvas = ({ numFaces }) => {
         const bodyParts = Object.keys(facePoints);
 
         for (const part of bodyParts) {
+          const arr = Array(50);
+          arr.fill(0);
+          for (const i in arr) {
+            arr[i] = Math.pow(i, 2);
+            console.log(arr[i]);
+          }
           const partToDraw = facePoints[part];
           const xOffset = left;
           const yOffset = top;
