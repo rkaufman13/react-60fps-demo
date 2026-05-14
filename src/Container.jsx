@@ -2,7 +2,6 @@ import { useState } from "react";
 import App from "./App";
 import AppExplanation from "./AppExplanation";
 import Sidebar from "./Sidebar";
-import Leaky from "./Leaky";
 import AppWithSetInterval from "./AppWithSetInterval";
 import AppWithoutMemo from "./AppWithoutMemo";
 
@@ -26,7 +25,6 @@ const Container = () => {
               <App></App>
             </>
           )}
-          {visible.leaky && <Leaky></Leaky>}
           {visible.interval && <AppWithSetInterval />}
           {visible.unmemoized && <AppWithoutMemo></AppWithoutMemo>}
         </div>
