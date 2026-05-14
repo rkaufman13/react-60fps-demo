@@ -2,32 +2,22 @@ import React, { useRef, useEffect, useState } from "react";
 import { color_stroke_1, line_width_1, WS_URL } from "./Consts";
 import useWebSocket from "react-use-websocket-lite";
 
-const Canvas = ({ numFaces }) => {
+const Canvas = () => {
   console.log("I have rendered :(");
   const canvasRef = useRef(null);
   const [context, setContext] = useState(null);
-  const canvasHeight = 1920;
+  const canvasHeight = 1020;
   const canvasWidth = 1080;
   let facesRef = useRef(null);
 
   const handleJsonMessage = (event) => {
     try {
       const message = JSON.parse(event.data);
-      if (Object.hasOwn(message, "cameras")) {
-        if (numFaces > 0) {
-          facesRef.current = message.cameras[0].faces;
-        } else {
-          delete message.cameras[0].faces["def"];
-          delete message.cameras[0].faces["ghi"];
-          delete message.cameras[0].faces["jkl"];
-          facesRef.current = message.cameras[0].faces;
-        }
+      if (Object.hasOwn(message, "face")) {
+        facesRef.current = message.face;
       }
     } catch (e) {
-      console.log(
-        `Bad JSON message received from SpyFR_BE: ${e},${event.data}`,
-        e,
-      );
+      console.log(`Bad JSON message received from BE: ${e},${event.data}`, e);
     }
   };
 
@@ -49,40 +39,38 @@ const Canvas = ({ numFaces }) => {
     const draw = () => {
       if (facesRef.current) {
         context.clearRect(0, 0, canvasWidth, canvasHeight);
-        const faces = facesRef.current;
-        for (const face_id of Object.keys(faces)) {
-          let lineWidth = 1;
-          const facePoints = faces[face_id].geometry;
-          const left = faces[face_id].left;
-          const top = faces[face_id].top;
-          if (facePoints == undefined || context == null) {
-            return;
+        const face = facesRef.current;
+        let lineWidth = 1;
+        const facePoints = face.geometry;
+        const left = face.left;
+        const top = face.top;
+        if (facePoints == undefined || context == null) {
+          return;
+        }
+        const bodyParts = Object.keys(facePoints);
+
+        for (const part of bodyParts) {
+          const partToDraw = facePoints[part];
+          const xOffset = left;
+          const yOffset = top;
+
+          context.beginPath();
+          context.moveTo(
+            partToDraw[0][0] + xOffset,
+            partToDraw[0][1] + yOffset,
+          );
+          for (const point of partToDraw.slice(1)) {
+            context.lineTo(point[0] + xOffset, point[1] + yOffset);
           }
-          const bodyParts = Object.keys(facePoints);
-
-          for (const part of bodyParts) {
-            const partToDraw = facePoints[part];
-            const xOffset = left;
-            const yOffset = top;
-
-            context.beginPath();
-            context.moveTo(
+          if (part == "left_eye" || part == "right_eye") {
+            context.lineTo(
               partToDraw[0][0] + xOffset,
               partToDraw[0][1] + yOffset,
             );
-            for (const point of partToDraw.slice(1)) {
-              context.lineTo(point[0] + xOffset, point[1] + yOffset);
-            }
-            if (part == "left_eye" || part == "right_eye") {
-              context.lineTo(
-                partToDraw[0][0] + xOffset,
-                partToDraw[0][1] + yOffset,
-              );
-            }
-            context.strokeStyle = color_stroke_1;
-            context.lineWidth = line_width_1 * lineWidth;
-            context.stroke();
           }
+          context.strokeStyle = color_stroke_1;
+          context.lineWidth = line_width_1 * lineWidth;
+          context.stroke();
         }
       }
     };
@@ -116,7 +104,7 @@ const Canvas = ({ numFaces }) => {
       ref={canvasRef}
       id="bigCanvas"
       width="800"
-      height="1200"
+      height="900"
       className="canvas-drawing"
     />
   );

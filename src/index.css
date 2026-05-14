@@ -24,8 +24,6 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
   min-height: 100vh;
 }
@@ -90,12 +88,20 @@ background-color: #f6f6f6;
 }
 
 #app {
-  margin: 0 2rem;
+  margin: 1em 2rem;
+}
+
+#sidebar {
+  margin-left:1rem;
 }
 
 #sidebar button {
-  background-color:aquamarine;
-  margin: 20px 0px;
+  background-color:#358ccb;
+  margin:0;
+  width:100%;
+  border-radius: 0;
+  border: 1px solid black;
+  color: white
 }
 
 #explanation {
@@ -107,4 +113,10 @@ background-color: #f6f6f6;
   margin-left: 10px;
   margin-right: 10px;
   width:40px;
+}
+
+.refractor-marker {
+  /* background-color: #fdfdfd; */
+  border-left:3px solid red;
+  border-right:3px solid red;
 }

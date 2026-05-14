@@ -9,6 +9,9 @@ function AppWithoutMemo({ numFaces }) {
   };
   return (
     <>
+      <h1>
+        Without <code>Memo</code>
+      </h1>
       <CanvasWithoutMemo numFaces={numFaces} />
       Irrelevant value: {irrelevantValue}
       <button onClick={handleClick}>Force parent to rerender</button>

@@ -1,25 +1,10 @@
 import React from "react";
 
-const Sidebar = ({ handleClick, numFaces, handleToggle }) => {
+const Sidebar = ({ handleClick }) => {
   return (
-    <>
-      <label htmlFor="toggle">One face</label>
-      <input
-        type="range"
-        step="1"
-        min="0"
-        max="1"
-        className="toggle-slider"
-        value={numFaces}
-        onChange={handleToggle}
-        id="toggle"
-      />
-      <label htmlFor="toggle">many faces</label>
+    <div id="sidebar">
       <button value="working" onClick={handleClick}>
         Final working example
-      </button>
-      <button value="leaky" onClick={handleClick}>
-        Memory leak version (don't do this!)
       </button>
       <button value="interval" onClick={handleClick}>
         Using setInterval instead of requestAnimationFrame
@@ -27,7 +12,7 @@ const Sidebar = ({ handleClick, numFaces, handleToggle }) => {
       <button value="unmemoized" onClick={handleClick}>
         Without React.memo()
       </button>
-    </>
+    </div>
   );
 };
 
