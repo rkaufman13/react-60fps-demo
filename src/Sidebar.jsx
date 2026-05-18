@@ -12,6 +12,13 @@ const Sidebar = ({ handleClick }) => {
       <button value="unmemoized" onClick={handleClick}>
         Without React.memo()
       </button>
+      <button
+        onClick={() => {
+          window.open("./slides/index.html", "_blank");
+        }}
+      >
+        View slides
+      </button>
     </div>
   );
 };
